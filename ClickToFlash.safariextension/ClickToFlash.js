@@ -95,11 +95,11 @@ ClickToFlash.prototype.openWhitelist = function() {
 	document.body.appendChild(bg);
 	
 	var mainHeader = document.createElement("h1");
-	mainHeader.innerHTML = "ClickToFlash";
+	mainHeader.textContent = "ClickToFlash";
 	container.appendChild(mainHeader);
 	
 	var subHeader = document.createElement("h2");
-	subHeader.innerHTML = "Site Whitelist";
+	subHeader.textContent = "Site Whitelist";
 	container.appendChild(subHeader);
 	
 	var listBox = document.createElement("ul");
@@ -108,7 +108,7 @@ ClickToFlash.prototype.openWhitelist = function() {
 	
 	var createNewElement = function() {
 		var newElement = document.createElement("li");
-		newElement.innerHTML = "www.example.com";
+		newElement.textContent = "www.example.com";
 		listBox.appendChild(newElement);
 		newElement.onclick = function(event) {
 			// Deselect the current selection
@@ -129,7 +129,7 @@ ClickToFlash.prototype.openWhitelist = function() {
 		}
 		
 		var newItem = createNewElement();
-		newItem.innerHTML = currentWhitelist;
+		newItem.textContent = currentWhitelist;
 	}
 	
 	var buttonBar = document.createElement("div");
@@ -138,13 +138,13 @@ ClickToFlash.prototype.openWhitelist = function() {
 	
 	var addButton = document.createElement("button");
 	addButton.id = "addWhitelistButton";
-	addButton.innerHTML = "+";
+	addButton.textContent = "+";
 	buttonBar.appendChild(addButton);
 	addButton.onclick = createNewElement;
 	
 	var removeButton = document.createElement("button");
 	removeButton.id = "removeWhitelistButton";
-	removeButton.innerHTML = "&ndash;";
+	removeButton.textContent = "\u2013";
 	buttonBar.appendChild(removeButton);
 	removeButton.onclick = function(event) {
 		for (i = 0; i < listBox.childNodes.length; i++) {
@@ -163,18 +163,18 @@ ClickToFlash.prototype.openWhitelist = function() {
 	var cancelButton = document.createElement("button");
 	cancelButton.setAttribute("type", "button");
 	cancelButton.id = "cancelButton";
-	cancelButton.innerHTML = "Cancel";
+	cancelButton.textContent = "Cancel";
 	cancelButton.onclick = function(event){origThis.closeWhitelist();};
 	bottomButtons.appendChild(cancelButton);
 	
 	var saveButton = document.createElement("button");
 	saveButton.setAttribute("type", "button");
 	saveButton.id = "saveButton";
-	saveButton.innerHTML = "Save";
+	saveButton.textContent = "Save";
 	saveButton.onclick = function(event){
 		var whitelistSites = [];
 		for (i = 0; i < listBox.childNodes.length; i++) {
-			whitelistSites[whitelistSites.length] = listBox.childNodes[i].innerHTML.replace("<br>", "");
+			whitelistSites[whitelistSites.length] = listBox.childNodes[i].textContent.replace(/\s/g, "");
 		}
 		
 		var newWhitelistString = whitelistSites.join(",");
@@ -239,7 +239,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 	
 	var loadFlashElement = document.createElement("li");
 	loadFlashElement.className = "menuItem";
-	loadFlashElement.innerHTML = "Load Flash";
+	loadFlashElement.textContent = "Load Flash";
 	loadFlashElement.id = "loadFlashMenuItem";
 	loadFlashElement.onclick = function(event){origThis.loadFlashForElement(placeholderElement.parentNode);};
 	menuElement.appendChild(loadFlashElement);
@@ -247,7 +247,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 	if (this.videoElementMapping[elementID]) {
 		var loadH264Element = document.createElement("li");
 		loadH264Element.className = "menuItem";
-		loadH264Element.innerHTML = "Load in QuickTime";
+		loadH264Element.textContent = "Load in QuickTime";
 		loadH264Element.id = "loadQuicktimeMenuItem";
 		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement.parentNode);};
 		menuElement.appendChild(loadH264Element);
@@ -259,7 +259,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 
 	var openWhitelistElement = document.createElement("li");
 	openWhitelistElement.className = "menuItem";
-	openWhitelistElement.innerHTML = "Edit Whitelist...";
+	openWhitelistElement.textContent = "Edit Whitelist...";
 	openWhitelistElement.onclick = function(event){origThis.openWhitelist();};
 	menuElement.appendChild(openWhitelistElement);
 	
@@ -389,12 +389,12 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	horizontalPositionElement.appendChild(logoContainer);
 	
 	var logoElement = document.createElement("div");
-	logoElement.innerHTML = "Flash";
+	logoElement.textContent = "Flash";
 	logoElement.className = "logo";
 	logoContainer.appendChild(logoElement);
 	
 	var logoInsetElement = document.createElement("div");
-	logoInsetElement.innerHTML = "Flash";
+	logoInsetElement.textContent = "Flash";
 	logoInsetElement.className = "logo inset";
 	logoContainer.appendChild(logoInsetElement);
 	
@@ -489,9 +489,9 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 				
 				// Change the placeholder text
 				var placeholderLogoInset = placeholderElement.firstChild.firstChild.firstChild.firstChild.childNodes[0];
-				placeholderLogoInset.innerHTML = badgeLabel;
+				placeholderLogoInset.textContent = badgeLabel;
 				var placeholderLogo = placeholderElement.firstChild.firstChild.firstChild.firstChild.childNodes[1];
-				placeholderLogo.innerHTML = badgeLabel;
+				placeholderLogo.textContent = badgeLabel;
 			};
 			currentKiller.processElement(element, killerCallback);
 			break;
