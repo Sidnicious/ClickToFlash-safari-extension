@@ -121,6 +121,7 @@
 	-webkit-transition-property: opacity;
 	-webkit-transition-duration: 0.15s;
 	border: 1px solid rgba(0, 0, 0, 0.3);
+	white-space: nowrap;
 }
 
 .clickToFlashPlaceholder .contextMenu li.menuItem {

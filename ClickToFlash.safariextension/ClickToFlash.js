@@ -239,10 +239,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 	
 	var loadFlashElement = document.createElement("li");
 	loadFlashElement.className = "menuItem";
-	// Use nonbreaking spaces so that the menu items don't wrap
-	// if the context menu is opened close to the right side of
-	// the placeholder
-	loadFlashElement.innerHTML = "Load&nbsp;Flash";
+	loadFlashElement.innerHTML = "Load Flash";
 	loadFlashElement.id = "loadFlashMenuItem";
 	loadFlashElement.onclick = function(event){origThis.loadFlashForElement(placeholderElement.parentNode);};
 	menuElement.appendChild(loadFlashElement);
@@ -250,7 +247,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 	if (this.videoElementMapping[elementID]) {
 		var loadH264Element = document.createElement("li");
 		loadH264Element.className = "menuItem";
-		loadH264Element.innerHTML = "Load&nbsp;in&nbsp;QuickTime";
+		loadH264Element.innerHTML = "Load in QuickTime";
 		loadH264Element.id = "loadQuicktimeMenuItem";
 		loadH264Element.onclick = function(event){origThis.loadH264ForElement(placeholderElement.parentNode);};
 		menuElement.appendChild(loadH264Element);
@@ -262,7 +259,7 @@ ClickToFlash.prototype.openContextMenu = function(placeholderElement, left, top)
 
 	var openWhitelistElement = document.createElement("li");
 	openWhitelistElement.className = "menuItem";
-	openWhitelistElement.innerHTML = "Edit&nbsp;Whitelist...";
+	openWhitelistElement.innerHTML = "Edit Whitelist...";
 	openWhitelistElement.onclick = function(event){origThis.openWhitelist();};
 	menuElement.appendChild(openWhitelistElement);
 	
