@@ -221,6 +221,7 @@
 	overflow: auto !important;
 	overflow-x: hidden !important;
 	list-style: none !important;
+	color: black !important;
 }
 
 #whitelistContainer #whitelistSites li {
@@ -230,11 +231,16 @@
 	padding: 2px 4px !important;
 	line-height: 22px !important;
 }
-
-#whitelistContainer #whitelistSites li.selected {
-	background-color: rgb(56, 117, 215) !important;
+#whitelistContainer #whitelistSites li:not(:focus):not([contenteditable]){
+	cursor: default !important;
+}
+#whitelistContainer #whitelistSites li.selected:not(:focus) {
+	background-color: rgb(52, 100, 201) !important;
 	color: #fff !important;
+}
+#whitelistContainer #whitelistSites li.selected:focus[contenteditable] {
 	-webkit-user-select: text !important;
+	color: black !important;
 }
 
 #whitelistContainer #buttonBar {
@@ -262,7 +268,7 @@
 	text-align: center !important;
 }
 
-#whitelistContainer #buttonBar button:active {
+#whitelistContainer #buttonBar button:active:not(:disabled) {
 	background-color: rgba(0, 0, 0, 0.4) !important;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) !important;
 	color: rgb(40, 40, 40) !important;
@@ -273,6 +279,9 @@
 	margin-left: -1px !important;
 	height: 24px !important;
 	width: 33px !important;
+}
+#whitelistContainer #buttonBar button:disabled{
+	color: #aaa !important;
 }
 
 #whitelistBottomButtons {
@@ -296,7 +305,7 @@
 	-webkit-box-shadow: 0 0 0 1px rgb(140, 140, 140), 0 1px 0 1px #fff !important;
 }
 
-#whitelistContainer button:active {
+#whitelistContainer button:active:not(:disabled) {
 	background: -webkit-gradient(linear, left bottom, left top, from(rgb(241, 241, 241)), to(rgb(220, 220, 220))) !important;
 }
 

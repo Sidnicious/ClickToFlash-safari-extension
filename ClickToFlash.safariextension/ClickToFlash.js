@@ -84,7 +84,7 @@ ClickToFlash.prototype.openWhitelist = function() {
 	bg.id = "whitelistBackground";
 	var origThis = this;
 	bg.onclick = function(event) {
-		if (event.target.id == "whitelistBackground") {
+		if (event.target === bg) {
 			origThis.closeWhitelist();
 		}
 	};
@@ -106,32 +106,6 @@ ClickToFlash.prototype.openWhitelist = function() {
 	listBox.id = "whitelistSites";
 	container.appendChild(listBox);
 	
-	var createNewElement = function() {
-		var newElement = document.createElement("li");
-		newElement.textContent = "www.example.com";
-		listBox.appendChild(newElement);
-		newElement.onclick = function(event) {
-			// Deselect the current selection
-			for (i = 0; i < listBox.childNodes.length; i++) {
-				var currentItem = listBox.childNodes[i];
-				currentItem.className = currentItem.className.replace("selected", "");
-			}
-			event.target.className = "selected";
-		};
-		newElement.setAttribute("contentEditable", "plaintext-only");
-		return newElement;
-	};
-	
-	for (i = 0; i < this.settings["whitelist"].length; i++) {
-		var currentWhitelist = this.settings["whitelist"][i];
-		if (!currentWhitelist.length) {
-			continue;
-		}
-		
-		var newItem = createNewElement();
-		newItem.textContent = currentWhitelist;
-	}
-	
 	var buttonBar = document.createElement("div");
 	buttonBar.id = "buttonBar";
 	container.appendChild(buttonBar);
@@ -140,21 +114,12 @@ ClickToFlash.prototype.openWhitelist = function() {
 	addButton.id = "addWhitelistButton";
 	addButton.textContent = "+";
 	buttonBar.appendChild(addButton);
-	addButton.onclick = createNewElement;
 	
 	var removeButton = document.createElement("button");
 	removeButton.id = "removeWhitelistButton";
 	removeButton.textContent = "\u2013";
+	removeButton.disabled = true;
 	buttonBar.appendChild(removeButton);
-	removeButton.onclick = function(event) {
-		for (i = 0; i < listBox.childNodes.length; i++) {
-			var currentItem = listBox.childNodes[i];
-			if (currentItem.className == "selected") {
-				listBox.removeChild(currentItem);
-				break;
-			}
-		}
-	};
 	
 	var bottomButtons = document.createElement("div");
 	bottomButtons.id = "whitelistBottomButtons";
@@ -172,9 +137,12 @@ ClickToFlash.prototype.openWhitelist = function() {
 	saveButton.id = "saveButton";
 	saveButton.textContent = "Save";
 	saveButton.onclick = function(event){
-		var whitelistSites = [];
+		var whitelistSites = [], whitelistSite;
 		for (i = 0; i < listBox.childNodes.length; i++) {
-			whitelistSites[whitelistSites.length] = listBox.childNodes[i].textContent.replace(/\s/g, "");
+			whitelistSite = listBox.childNodes[i].textContent.replace(/\s/g, "");
+			if (whitelistSite) {
+				whitelistSites[whitelistSites.length] = whitelistSite;
+			};
 		}
 		
 		var newWhitelistString = whitelistSites.join(",");
@@ -184,6 +152,112 @@ ClickToFlash.prototype.openWhitelist = function() {
 		origThis.closeWhitelist();
 	};
 	bottomButtons.appendChild(saveButton);
+
+	var selectedListItem = null;
+	
+	function selectListItem(li){
+		if (selectedListItem) {
+			selectedListItem.blur();
+			selectedListItem.className = "";
+		}
+		if (li) {
+			li.className = "selected";
+			removeButton.disabled = false;
+		} else {
+			removeButton.disabled = true;
+		}
+		selectedListItem = li;
+	}
+
+	function startEditing(){
+		selectedListItem.setAttribute('contenteditable', 'plaintext-only');
+		selectedListItem.focus();
+		selectedListItem.editing = true;
+	}
+	function endEditing(){
+		selectedListItem.removeAttribute('contenteditable');
+		delete selectedListItem.editing;
+		selectedListItem.blur();
+	}
+	function removeSelectedListItem(){
+		var listItem = selectedListItem;
+		selectListItem(listItem.nextElementSibling || listItem.previousElementSibling || null);
+		listBox.removeChild(listItem);
+	}
+	function addListItem(text, select){
+		var newListItem = document.createElement("li");
+		listBox.appendChild(newListItem);
+		if (text) {
+			newListItem.textContent = text;
+		}
+		if (select) {
+			selectListItem(newListItem);
+			startEditing();
+		}
+	}
+
+	document.addEventListener("keydown", function(e){
+		var next;
+		if ((e.keyCode === 38 && !(selectedListItem && selectedListItem.editing)) || (e.keyCode === 9 && e.shiftKey && !e.ctrlKey)) { // Up arrow/shift+tab
+			if (selectedListItem) { 
+				if ((next = selectedListItem.previousElementSibling)) {
+					selectListItem(next);
+				}
+			} else {
+				selectListItem(listBox.lastElementChild);
+			}
+		} else if ((e.keyCode === 40 && !(selectedListItem && selectedListItem.editing)) || (e.keyCode === 9 && !e.ctrlKey)){ // Down arrow/tab
+			if (selectedListItem) { 
+				if ((next = selectedListItem.nextElementSibling)) {
+					selectListItem(next);
+				}
+			} else {
+				selectListItem(listBox.firstElementChild);
+			}
+		} else if (e.keyCode === 13){ // Enter
+			if (selectedListItem) {
+				if (selectedListItem.editing) {
+					endEditing();
+				} else {
+					startEditing();
+				}
+			}
+		} else if (e.keyCode === 27){ // Escape
+			if (selectedListItem && selectedListItem.editing) {
+				endEditing();
+			};
+		} else {
+			return;
+		}
+		e.preventDefault();
+	});
+	listBox.addEventListener("mousedown", function(e){
+		if(e.target.nodeName === "LI"){
+			if (e.target !== selectedListItem) {
+				selectListItem(e.target);
+			}
+		} else {
+			selectListItem(null);
+		}
+	});
+	listBox.addEventListener("dblclick", function(e){
+		if(e.target.nodeName === "LI" && selectedListItem && selectedListItem.contentEditable === "false"){
+			startEditing();
+		}
+	});
+	listBox.addEventListener("focusout", function(){
+		endEditing();
+	});
+	addButton.addEventListener("click", function(){
+		addListItem(null, true);
+	});
+	removeButton.addEventListener("click", removeSelectedListItem);
+	
+	this.settings.whitelist.forEach(function(item){
+		if (item.length) {
+			addListItem(item);
+		};
+	});
 	
 	setTimeout(function(){
 		bg.className = "fadeIn"; 
