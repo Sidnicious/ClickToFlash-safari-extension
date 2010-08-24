@@ -195,8 +195,8 @@ ClickToFlash.prototype.openWhitelist = function() {
 			startEditing();
 		}
 	}
-
-	document.addEventListener("keydown", function(e){
+	var keyboardListener;
+	document.addEventListener("keydown", (keyboardListener = function(e){
 		var next;
 		if ((e.keyCode === 38 && !(selectedListItem && selectedListItem.editing)) || (e.keyCode === 9 && e.shiftKey && !e.ctrlKey)) { // Up arrow/shift+tab
 			if (selectedListItem) { 
@@ -230,7 +230,7 @@ ClickToFlash.prototype.openWhitelist = function() {
 			return;
 		}
 		e.preventDefault();
-	});
+	}));
 	listBox.addEventListener("mousedown", function(e){
 		if(e.target.nodeName === "LI"){
 			if (e.target !== selectedListItem) {
@@ -263,16 +263,25 @@ ClickToFlash.prototype.openWhitelist = function() {
 		bg.className = "fadeIn"; 
 		container.className = "zoomFade";
 	}, 10);
+	
+	this.whitelistEditor = { container: bg, cleanUp: function(){
+		document.removeEventListener("keydown", keyboardListener);
+	} };
 };
 
 ClickToFlash.prototype.closeWhitelist = function() {
-	var container = document.getElementById("whitelistContainer");
-	var bg = document.getElementById("whitelistBackground");
+	if (this.whitelistEditor) {
+		var container = document.getElementById("whitelistContainer");
+		var bg = document.getElementById("whitelistBackground");
 	
-	container.className = "";
-	bg.className = "";
+		container.className = "";
+		bg.className = "";
+		
+		this.whitelistEditor.cleanUp();
 	
-	setTimeout(function(){document.body.removeChild(bg);}, 510);
+		setTimeout(function(){document.body.removeChild(bg);}, 510);
+		this.whitelistEditor = null;
+	}
 };
 
 ClickToFlash.prototype.openActionMenu = function(event) {
