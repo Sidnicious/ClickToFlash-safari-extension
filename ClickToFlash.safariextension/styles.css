@@ -166,7 +166,7 @@
 	opacity: 0;
 }
 
-#whitelistBackground.fadeIn {
+#whitelistBackground.visible {
 	opacity: 1;
 }
 
@@ -194,7 +194,7 @@
 	font-size: 12px !important;
 }
 
-#whitelistContainer.zoomFade {
+#whitelistBackground.visible #whitelistContainer {
 	-webkit-transform: scale(1) !important;
 	opacity: 1 !important;
 }
