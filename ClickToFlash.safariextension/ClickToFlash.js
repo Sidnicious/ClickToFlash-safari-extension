@@ -27,6 +27,11 @@ ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 	if (element instanceof HTMLEmbedElement || element instanceof HTMLObjectElement) {
 		if (element.allowedToLoad)
 			return;
+		// The beforeload event may fire on an element more than once before it is removed (including <https://bugs.webkit.org/show_bug.cgi?id=44575>).
+		if(element.clickToFlashPlaceholder){
+			event.preventDefault();
+			return;
+		}
 			
 		if (element instanceof HTMLObjectElement) {
 			var type = element.getAttribute("type");
@@ -361,6 +366,7 @@ ClickToFlash.prototype.loadFlashForElement = function(placeholderElement) {
 	var elementID = parseInt(placeholderElement.id.replace("ClickToFlashPlaceholder", ""));
 	var element = this.elementMapping[elementID];
 	element.allowedToLoad = true;
+	delete element.clickToFlashPlaceholder;
 	placeholderElement.parentNode.replaceChild(element, placeholderElement);
 };
 
@@ -422,6 +428,8 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 	placeholderElement.style.height = element.offsetHeight + "px";
 	placeholderElement.className = "clickToFlashPlaceholder";
 	
+	element.clickToFlashPlaceholder = placeholderElement;
+	
 	var id = element.elementID;
 	this.elementMapping[id] = element;
 	placeholderElement.id = "ClickToFlashPlaceholder" + id;
@@ -443,15 +451,17 @@ ClickToFlash.prototype.processFlashElement = function(element) {
 		return false;
 	};
 
-	if (element.parentNode) {
-		// Wait 5ms before replacing the element. If we don't, the following
-		// WebKit bug will cause CTF to crash on certain sites:
-		//     https://bugs.webkit.org/show_bug.cgi?id=41054
-		// This was fixed on June 23, 2010, but it's unlikely to show up
-		// in a release version of Safari for a while. Until then,
-		// this workaround seems to work.
-		setTimeout(function(){element.parentNode.replaceChild(placeholderElement, element);}, 5);
-	}
+	// Wait 5ms before replacing the element. If we don't, the following
+	// WebKit bug will cause CTF to crash on certain sites:
+	//     https://bugs.webkit.org/show_bug.cgi?id=41054
+	// This was fixed on June 23, 2010, but it's unlikely to show up
+	// in a release version of Safari for a while. Until then,
+	// this workaround seems to work.
+	setTimeout(function(){
+		if(element.parentNode){
+			element.parentNode.replaceChild(placeholderElement, element);
+		}
+	}, 5);
 	
 	var container = document.createElement("div");
 	container.className = "clickToFlashPlaceholderContainer";
