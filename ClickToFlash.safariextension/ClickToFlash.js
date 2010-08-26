@@ -1,26 +1,27 @@
+function proxyForMethod(handler, thisObject){
+	return function(event){
+		return handler.call(thisObject, event);
+	}
+}
+
 function ClickToFlash() {
 	this.elementMapping = new Array();
 	this.videoElementMapping = new Array();
 	
 	this.killers = [];
-	
 	this.settings = null;
 	
-	var _this = this;	
-	this.respondToMessage = function(event) {
-		if (event.name == "getSettings") {
-			_this.getSettings(event);
-		}
-	};
-	
-	this.handleBeforeLoadEventTrampoline = function(event) {
-		_this.handleBeforeLoadEvent(event);
-	};
-	
-	safari.self.addEventListener("message", this.respondToMessage, false);
-	document.addEventListener("beforeload", this.handleBeforeLoadEventTrampoline, true);
+	safari.self.addEventListener("message", proxyForMethod(this.handleMessage, this), false);
+	document.addEventListener("beforeload", proxyForMethod(this.handleBeforeLoadEvent, this), true);
 }
 
+ClickToFlash.prototype.handleMessage = function(event){
+	switch (event.name){
+		case "getSettings":
+			this.getSettings(event);
+			break;
+	}
+};
 ClickToFlash.prototype.handleBeforeLoadEvent = function(event) {
 	const element = event.target;
 	
