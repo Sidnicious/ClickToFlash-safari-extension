@@ -1,36 +1,19 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Global HTML</title>
-		<script type="text/javascript">
-			function getSettings() {
-				var settings = new Object();
-				settings.useH264 = safari.extension.settings["useH264"];
-				settings.useHDH264 = safari.extension.settings["useHDH264"];
-				settings.sifrReplacement = safari.extension.settings["sifrReplacement"];
-				settings.whitelist = safari.extension.settings["whitelist"];
-				if (!settings.whitelist) {
-					settings.whitelist = "";
+<script type="text/javascript">
+	safari.application.addEventListener("message", function(event) {
+		switch (event.name) {
+			case "canLoad":
+				if (event.message === "getSettings") {
+					event.message = {
+						useH264: safari.extension.settings["useH264"],
+						useHDH264: safari.extension.settings["useHDH264"],
+						sifrReplacement: safari.extension.settings["sifrReplacement"],
+						whitelist: safari.extension.settings["whitelist"] || ""
+					};
 				}
-
-				return settings;
-			}
-			
-			function respondToMessage(event) {
-				if (event.name == "getSettings") {
-					getSettings(event);
-				} else if (event.name == "canLoad") {
-					var data = event.message;
-					if (data == "getSettings") {
-						event.message = getSettings();
-					}
-				} else if (event.name == "setWhitelist") {
-					safari.extension.settings["whitelist"] = event.message;
-				}
-			}
-			
-			safari.application.addEventListener("message", respondToMessage, false);
-		</script>
-	</head>
-	<body></body>
-</html>
+				break;
+			case "setWhitelist":
+				safari.extension.settings["whitelist"] = event.message;
+				break;
+		}
+	}, false);
+</script>
